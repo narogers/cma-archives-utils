@@ -7,12 +7,19 @@
 # mostly meant to handle the images that lack any substantial 
 # metadata but could be adopted for use in other situations
 require 'csv'
+require 'find'
+require 'mime-types'
+require 'pry'
 
 base_directory = ARGV[0]
 creator = ARGV[1]
 # A safeguard to make sure even when no defaults are provided it
 # does not default to nil
 default_collections = ARGV.slice(2, ARGV.length - 2) || []
+
+# Since RAW files are still problematic without a patch to MIME::Types do this
+# the old fashioned way - by file extensions
+formats = ['.dng', '.jpg', '.tif', '.tiff']
 
 # Now begin to iterate over the directories and write out a
 # simple batch file for each
@@ -22,10 +29,9 @@ batches.each do |batch|
 	# for the batch title and collection membership
 	title = /\d{4}-\d{2}-?\d{2}?\s(.*)$/.match(batch.split("/").last)[1]
   images = []
-  Dir.glob(batch + "*") do |f|
-  	if (['.tif', '.tiff', '.jpg', '.dng'].include?(File::extname(f)))
-  	  images.push File::basename(f)
-  	end
+  Find.find(batch) do |path|
+  	next if File::directory?(path)
+  	images.push(path) if (formats.include?(File::extname(path)))
   end
 
   # Write out the files with a header row, an empty line, and then
