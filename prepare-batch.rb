@@ -23,10 +23,11 @@ formats = ['.dng', '.jpg', '.tif', '.tiff']
 
 # Now begin to iterate over the directories and write out a
 # simple batch file for each
-batches = Dir.glob(File.expand_path(base_directory) + '/**/').select { |f| f=~ /\d{4}-\d{2}(-\d{2})?/ }
+batches = Dir.glob(File.expand_path(base_directory) + '/**/').select { |f| f.split("/").last =~ /^\d{4}-\d{2}/ }
 batches.each do |batch|
 	# Break up the title and cherry pick only the part that is needed
 	# for the batch title and collection membership
+	
 	title = /\d{4}-\d{2}-?\d{2}?\s(.*)$/.match(batch.split("/").last)[1]
   images = []
   Find.find(batch) do |path|
