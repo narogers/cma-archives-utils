@@ -48,9 +48,10 @@ batches.each do |batch|
   # be appended to the relationships for everything in the batch
   puts "Generating CSV template for \"#{title}\" at " + File::join([batch, "batch.csv"])
 	CSV.open(File.join([batch, "batch.csv"]), "wb") do |c|
-		c << [title, creator]
+		c << [title]
+		c << [creator]
 		c << []
-		c << ['file', 'part_of']
+		c << ['file', 'collections']
 		images.each do |i|
 			c << [i, default_collections.join("|")]
 		end
