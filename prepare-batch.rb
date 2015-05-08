@@ -50,10 +50,11 @@ batches.each do |batch|
 	CSV.open(File.join([batch, "batch.csv"]), "wb") do |c|
 		c << [title]
 		c << [creator]
+		c << [default_collections.join("|")]
 		c << []
-		c << ['file', 'collections']
+		c << ['file']
 		images.each do |i|
-			c << [i, default_collections.join("|")]
+			c << [i]
 		end
 	end
 end
