@@ -32,7 +32,8 @@ batches.each do |batch|
 	# Break up the title and cherry pick only the part that is needed
 	# for the batch title and collection membership
 	
-	title = /\d{2}\s(.*)$/.match(batch.split("/").last)[1]
+	title = /\d{2}\s([A-Z]{2}\s)?(.*)$/.match(batch.split("/").last)
+		.to_a.last
   images = []
   Find.find(batch) do |path|
   	next if File::directory?(path)
