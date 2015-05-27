@@ -19,7 +19,7 @@ default_collections = ARGV.slice(2, ARGV.length - 2) || []
 
 # Since RAW files are still problematic without a patch to MIME::Types do this
 # the old fashioned way - by file extensions
-formats = ['.dng', '.jpg', '.tif', '.tiff']
+formats = ['.dng', '.jpg', '.jpeg', '.tif', '.tiff']
 
 # Now begin to iterate over the directories and write out a
 # simple batch file for each. Because of some edges cases the regular
@@ -32,14 +32,14 @@ batches.each do |batch|
 	# Break up the title and cherry pick only the part that is needed
 	# for the batch title and collection membership
 	
-	title = /\d{2}\s([A-Z]{2}\s)?(.*)$/.match(batch.split("/").last)
+	title = /\d{2}\s([A-Z]{2}\s)?(.*)/.match(batch.split("/").last)
 		.to_a.last
   images = []
   Find.find(batch) do |path|
   	next if File::directory?(path)
         # Trim the path back to be relative to the batch directory (ie subdir/01.tif or 04.dng)
         filename = path.gsub(batch, "")
-  	images.push(filename) if (formats.include?(File::extname(path)))
+  	images.push(filename) if (formats.include?(File::extname(path).downcase))
   end
 
   # Write out the files with a header row, an empty line, and then
