@@ -12,7 +12,7 @@ require 'mime-types'
 require 'pry'
 
 base_directory = ARGV[0]
-creator = ARGV[1]
+creator = ARGV[1] || "clio-batches"
 # A safeguard to make sure even when no defaults are provided it
 # does not default to nil
 default_collections = ARGV.slice(2, ARGV.length - 2) || []
@@ -51,7 +51,9 @@ batches.each do |batch|
 	CSV.open(File.join([batch, "batch.csv"]), "wb") do |c|
 		c << [title]
 		c << [creator]
-		c << [default_collections.join("|")]
+		default_collections.map do |coll|
+			c << coll
+		end
 		c << []
 		c << ['file']
 		images.each do |i|
