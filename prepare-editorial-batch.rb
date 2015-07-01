@@ -34,6 +34,10 @@ batches.each do |batch|
 	
 	title = /\d{2}\s([A-Z]{2}\s)?(.*)/.match(batch.split("/").last)
 		.to_a.last
+        # If present lop off the trailing digits unless they correspond
+        # to a Gallery Number. To be safe unless remove '01', '1', etc
+        # instead of any arbitrary string of digits
+        title.gsub!(/\s[01]\d$/, "") 	
   images = []
   Find.find(batch) do |path|
   	next if File::directory?(path)
