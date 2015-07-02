@@ -43,6 +43,8 @@ batches.each do |batch|
   	next if File::directory?(path)
         # Trim the path back to be relative to the batch directory (ie subdir/01.tif or 04.dng)
         filename = path.gsub(batch, "")
+        # Ignore dot files
+        next if filename.match(/^\./)
   	images.push(filename) if (formats.include?(File::extname(path).downcase))
   end
 
