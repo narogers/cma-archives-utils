@@ -10,6 +10,7 @@ require 'csv'
 require 'find'
 require 'mime-types'
 require 'pry'
+require 'active_support/core_ext/string/inflections'
 
 base_directory = ARGV[0]
 creator = ARGV[1] || "clio-batches"
@@ -34,10 +35,13 @@ batches.each do |batch|
 	
 	title = /\d{2}\s([A-Z]{2}\s)?(.*)/.match(batch.split("/").last)
 		.to_a.last
-        # If present lop off the trailing digits unless they correspond
-        # to a Gallery Number. To be safe unless remove '01', '1', etc
-        # instead of any arbitrary string of digits
-        title.gsub!(/\s[01]\d$/, "") 	
+    # If present lop off the trailing digits unless they correspond
+    # to a Gallery Number. To be safe unless remove '01', '1', etc
+    # instead of any arbitrary string of digits
+    title.gsub!(/\s[01]\d$/, "") 	
+    # Now normalize the case since people may not have been consistent
+    # in their naming practices
+    title = title.titleize
   images = []
   Find.find(batch) do |path|
   	next if File::directory?(path)
