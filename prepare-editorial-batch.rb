@@ -32,7 +32,6 @@ batches = Dir.glob(File.expand_path(base_directory) + '/**/').select { |f| f.spl
 batches.each do |batch|
 	# Break up the title and cherry pick only the part that is needed
 	# for the batch title and collection membership
-	
 	title = /\d{2}\s([A-Z]{2}\s)?(.*)/.match(batch.split("/").last)
 		.to_a.last
     # If present lop off the trailing digits unless they correspond
@@ -47,9 +46,14 @@ batches.each do |batch|
   	next if File::directory?(path)
         # Trim the path back to be relative to the batch directory (ie subdir/01.tif or 04.dng)
         filename = path.gsub(batch, "")
+        source = path.gsub(base_directory, "")
         # Ignore dot files
+
+        print source + "\n"
+        print "#{base_directory}\n"
+
         next if filename.match(/^\./)
-  	images.push(filename) if (formats.include?(File::extname(path).downcase))
+  	images.push({file: filename, source: source}) if (formats.include?(File::extname(path).downcase))
   end
 
   # Write out the files with a header row, an empty line, and then
@@ -61,13 +65,13 @@ batches.each do |batch|
 	CSV.open(File.join([batch, "batch.csv"]), "wb") do |c|
 		c << [title]
 		c << [creator]
-		default_collections.map do |coll|
-			c << coll
+		default_collections.each do |coll|
+			c << [coll]
 		end
 		c << []
-		c << ['file']
+		c << ['file', 'source']
 		images.each do |i|
-			c << [i]
+			c << [i[:file], i[:source]]
 		end
 	end
 end
