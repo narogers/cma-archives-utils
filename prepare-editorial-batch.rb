@@ -49,9 +49,6 @@ batches.each do |batch|
         source = path.gsub(base_directory, "")
         # Ignore dot files
 
-        print source + "\n"
-        print "#{base_directory}\n"
-
         next if filename.match(/^\./)
   	images.push({file: filename, source: source}) if (formats.include?(File::extname(path).downcase))
   end
