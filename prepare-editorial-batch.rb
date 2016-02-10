@@ -44,13 +44,23 @@ batches.each do |batch|
   images = []
   Find.find(batch) do |path|
   	next if File::directory?(path)
-        # Trim the path back to be relative to the batch directory (ie subdir/01.tif or 04.dng)
-        filename = path.gsub(batch, "")
-        source = path.gsub(base_directory, "")
-        # Ignore dot files
 
-        next if filename.match(/^\./)
-  	images.push({file: filename, source: source}) if (formats.include?(File::extname(path).downcase))
+    # Trim the path back to be relative to the batch directory (ie subdir/01.tif or 04.dng)
+    filename = path.gsub(batch, "")
+    # Skip dot files
+    next if filename.match(/^\./)
+
+    # Otherwise continue on
+    source = path.gsub(base_directory, "")
+    image_title = source.sub(/#{File::SEPARATOR}#{filename}$/, " - #{filename}")
+
+    metadata = {file: filename, source: source, title: image_title}
+    
+    # TODO: Get this working once the model is refined
+    #match_data = source.match(/^ED\s?(\d+)/)
+    #metadata[:ispartof] = match_data.nil? ? nil : "DVD ##{match_data[1]}"
+
+  	images.push(metadata) if (formats.include?(File::extname(path).downcase))
   end
 
   # Write out the files with a header row, an empty line, and then
@@ -59,6 +69,13 @@ batches.each do |batch|
   # There is no need to add the batch title which will automatically
   # be appended to the relationships for everything in the batch
   puts "Generating CSV template for \"#{title}\" at " + File::join([batch, "batch.csv"])
+    # :file always goes first but the order of the rest of the fields matters much
+    # less. Therefore we delete it before pushing it to the first spot in the
+    # array
+    metadata_fields = images.first.keys
+    metadata_fields.delete(:file)
+    metadata_fields.unshift(:file)
+
 	CSV.open(File.join([batch, "batch.csv"]), "wb") do |c|
 		c << [title]
 		c << [creator]
@@ -66,9 +83,9 @@ batches.each do |batch|
 			c << [coll]
 		end
 		c << []
-		c << ['file', 'source']
+		c << metadata_fields
 		images.each do |i|
-			c << [i[:file], i[:source]]
+			c << metadata_fields.map { |field| i[field] }
 		end
 	end
 end
