@@ -1,16 +1,21 @@
-class Resource
+class BatchFile
   attr_accessor :path, :metadata
 
-  def initialize
+  def initialize(resource)
+    self.path = resource
     self.metadata = {}
   end
 
   # Attributes should be a series of one or more key: value pairs which you
   # want to apply to the resource
   def add_metadata(attributes)
-    attributes.each_pair do |k, v|
-      self.metadata[k] = v
+    attributes.each_pair do |field, value|
+      add_metadata(field, value)
     end
+  end
+
+  def add_metadata(field, value)
+    self.metadata[field] = value
   end
 
   def delete_metadata(field)
@@ -18,9 +23,9 @@ class Resource
   end
 
   def to_s
-    output = :path
+    output = [path]
     self.metadata.keys.sort.each do |k|
-      output << ", #{metadata[k]}"
+      output << "#{metadata[k]}"
     end
     
     output
