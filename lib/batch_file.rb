@@ -21,13 +21,4 @@ class BatchFile
   def delete_metadata(field)
     self.metadata.remove(field) if self.metadata.exists? field
   end
-
-  def to_s
-    output = [path]
-    self.metadata.keys.sort.each do |k|
-      output << "#{metadata[k]}"
-    end
-    
-    output
-  end
 end

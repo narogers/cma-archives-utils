@@ -1,3 +1,4 @@
+require 'batch_file'
 require 'csv'
 require 'find'
 
@@ -6,22 +7,25 @@ class Batch
  
   def initialize
     @collection_title = DateTime.now.strftime("%Y-%02m-%02d")
-    @files = []
-    @metadata_fields = []
+    @files = {}
+    @properties = {}
   end
 
   def process(directory)
     @collection_title = extract_title(directory)
     # Traverse the directory structure and, if a file should be included in the
     # manifest, register it
-    Find.find(directory) do |path|
+
+    print "Directory => #{directory}\n"
+    print "Directory => #{File.expand_path(directory)}\n"
+ 
+    Find.find(File.expand_path(directory)) do |path|
       # Subdirectories are not supported at the current time
       next if File::directory? path
      
-      base_path = File.basename(path)
-      if include? base_path
-        metadata = extract_metadata(directory, base_path)
-        add_file(base_path, metadata)
+      file = File.basename(path)
+      if include? file
+        add_file(file, generate_metadata(directory, file))
       end
     end
   end
@@ -40,17 +44,17 @@ class Batch
   def add_file(file_name, metadata)
     file = BatchFile.new(file_name)
     metadata.each_pair do |key, value|
-      @metadata_fields << key unless metadata_fields.include? key
+      @properties[key] = nil unless @properties.include? key
       file.add_metadata(key, value)
     end
-    @files << file
+    @files[file_name] = file
   end
 
   def delete_file(file_name)
     @files.delete(file_name)
   end
     
-    # Override to customize the way that the manifest file is created for this
+  # Override to customize the way that the manifest file is created for this
   # batch. By default it uses the format below
   #
   # Collection Title
@@ -68,7 +72,14 @@ class Batch
     output << [self.parent_collection] unless parent_collection.nil?
     output << []
     output << self.manifest_header
-    files.each { |f| output << f.to_s }
+   
+    files.each_pair do |name, file| 
+      csv_for_file = [name]
+      @properties.keys.sort.each do |field|
+        csv_for_file << file.metadata[field]
+      end
+      output << csv_for_file
+    end
 
     output.close
   end
@@ -88,7 +99,7 @@ class Batch
     end
 
     def manifest_header
-      output = ([:file] << @metadata_fields.sort).flatten
+      output = ([:file] << @properties.keys.sort).flatten
     end
    
     # Determines the name of the batch. Override in a subclass for more specific
@@ -99,7 +110,7 @@ class Batch
 
     # Extracts file metadata. Override in subclasses to get more sophisticated
     # behaviours
-    def extract_metadata(directory, file_name)
+    def generate_metadata(directory, file_name)
       {title: file_name}
     end
 end
