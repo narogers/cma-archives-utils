@@ -2,8 +2,6 @@ require 'batch'
 
 class EditorialBatch < Batch
   def include? file_name
-    print "File name => #{file_name}\n"
-    print "Include in manifest => #{allowed_extensions.include? File.extname(file_name)}\n"
     allowed_extensions.include? File.extname(file_name)
   end
 
@@ -20,6 +18,10 @@ class EditorialBatch < Batch
   end
 
   protected
+    def parent_collection
+      "Editorial Photography"
+    end
+
     def allowed_extensions
       [
         ".dng", # Adobe RAW
@@ -56,10 +58,8 @@ class EditorialBatch < Batch
       if directory.include? File::Separator
         parent_directory = directory.split(File::Separator)[-2]
         if (parent_directory.start_with? "ED")
-          print "Old style Editorial Batch\n"
           @properties[:part_of] = parent_directory
         else
-          print "New style Editorial Batch\n"
           @properties[:category] = parent_directory
         end
         batch_directory = directory.split(File::Separator).last
@@ -70,7 +70,7 @@ class EditorialBatch < Batch
       # Second may be an optional photographer
       # The rest is the title
       batch_details = batch_directory.split(" ")
-      @properties[:creation_date] = batch_details.shift
+      @date_created = batch_details.shift
       if (batch_details.first.match(/^[A-Z]{2}$/))
         photographer = photographers[batch_details.shift]
         @properties[:photographer] = photographer

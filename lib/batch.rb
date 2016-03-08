@@ -15,11 +15,9 @@ class Batch
     @collection_title = extract_title(directory)
     # Traverse the directory structure and, if a file should be included in the
     # manifest, register it
-
-    print "Directory => #{directory}\n"
-    print "Directory => #{File.expand_path(directory)}\n"
- 
+    print "[#{File.basename(directory)}]\n"
     Find.find(File.expand_path(directory)) do |path|
+      print "#{File.basename(path)}\n"
       # Subdirectories are not supported at the current time
       next if File::directory? path
      
@@ -28,6 +26,7 @@ class Batch
         add_file(file, generate_metadata(directory, file))
       end
     end
+    print "\n"
   end
 
   # Given a file determine if it should be included in the manifest or not.
@@ -69,6 +68,7 @@ class Batch
     output = CSV.open(output_file, "w")
     output << [self.collection_title]
     output << [self.owner]
+    output << [self.date_created]
     output << [self.parent_collection] unless parent_collection.nil?
     output << []
     output << self.manifest_header
@@ -99,9 +99,15 @@ class Batch
     end
 
     def manifest_header
-      output = ([:file] << @properties.keys.sort).flatten
+      ([:file] << @properties.keys.sort).flatten
     end
-   
+  
+    # Date that the batch was created. You can override this in a subclasses
+    # to provide something other than the current time
+    def date_created
+      @date_created ||= Date.today
+    end
+ 
     # Determines the name of the batch. Override in a subclass for more specific
     # behaviour
     def extract_title(path)
