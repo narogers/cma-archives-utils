@@ -12,19 +12,25 @@ class Batch
   end
 
   def process(directory)
-    @collection_title = extract_title(directory)
-    # Traverse the directory structure and, if a file should be included in the
-    # manifest, register it
     print "[#{File.basename(directory)}]\n"
-    Find.find(File.expand_path(directory)) do |path|
-      print "#{File.basename(path)}\n"
-      # Subdirectories are not supported at the current time
-      next if File::directory? path
+    if is_valid_folder? directory
+      @collection_title = extract_title(directory)
+      # Traverse the directory structure and, if a file should be included 
+      # in the manifest, register it
+      Find.find(File.expand_path(directory)) do |path|
+        # Subdirectories are not supported at the current time
+        next if File::directory? path
      
-      file = File.basename(path)
-      if include? file
-        add_file(file, generate_metadata(directory, file))
+        file = File.basename(path)
+        if include? file
+          add_file(file, generate_metadata(directory, file))
+          print "[x] #{File.basename(path)}\n"
+        else
+          print "[ ] #{File.basename(path)}\n"
+        end 
       end
+    else
+      print "WARNING: Folder name is invalid\n"  
     end
     print "\n"
   end
@@ -115,6 +121,12 @@ class Batch
     # behaviours
     def generate_metadata(directory, file_name)
       {title: file_name}
+    end
+
+    # By default all directories are considered well formed. Override for
+    # specialized behaviour in subclasses
+    def is_valid_title? title
+      true
     end
 end
 

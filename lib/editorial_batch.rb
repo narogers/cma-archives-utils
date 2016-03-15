@@ -93,4 +93,26 @@ class EditorialBatch < Batch
         title: "#{directory} - #{file}"
       }
     end
+
+    # A valid directory title should be structured as either
+    #
+    # 2015-12-01_DB_Title_for_Collection [new style]
+    # OR
+    # 2005-01 RM Event name [old style]
+    def is_valid_title? title
+      # Normal pattern
+      valid_regex = /^\d{4}-\d{2}-?\d{2}?\s([A-Z]{2}\s)?\w+/
+      # But add exceptions if only a photographer is supplied or for
+      # other patterns that would otherwise match above
+      invalid_regexes = [
+        /^\d{4}-\d{2}-?\d{2}?\s[A-Z]{2}$/
+      ] 
+    
+      # Begin with the invalid regex pattern(s) first
+      invalid_regexes.each do |regex|
+        return false if (regex =~ title)
+      end
+      # Otherwise validate against the template
+      return ((valid_regex =~ title) == 0)
+    end
 end
