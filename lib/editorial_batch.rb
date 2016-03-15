@@ -2,7 +2,8 @@ require 'batch'
 
 class EditorialBatch < Batch
   def include? file_name
-    allowed_extensions.include? File.extname(file_name)
+    super && 
+      allowed_extensions.include?(File.extname(file_name))
   end
 
   def add_file(file, metadata)

@@ -33,11 +33,8 @@ class Batch
   # Override this method in children to behave as expected for different types
   # of collections
   def include?(file_name) 
-    include_file = true
-    include_file = !(file_name.start_with? ".")
-    include_file = !(file_name.end_with? ".csv")
-
-    include_file
+    (!(file_name.start_with? ".") &&
+     !(file_name.end_with? ".csv"))
   end
 
   def add_file(file_name, metadata)
