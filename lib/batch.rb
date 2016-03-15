@@ -13,7 +13,7 @@ class Batch
 
   def process(directory)
     print "[#{File.basename(directory)}]\n"
-    if is_parseable? directory
+    if is_parseable? File.basename(directory)
       @collection_title = extract_title(directory)
       # Traverse the directory structure and, if a file should be included 
       # in the manifest, register it
@@ -30,7 +30,7 @@ class Batch
         end 
       end
     else
-      print "WARNING: Folder name is invalid\n"  
+      print "WARNING: Directory name is invalid\n"  
     end
     print "\n"
   end
