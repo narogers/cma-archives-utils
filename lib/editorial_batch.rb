@@ -99,7 +99,7 @@ class EditorialBatch < Batch
     # 2015-12-01_DB_Title_for_Collection [new style]
     # OR
     # 2005-01 RM Event name [old style]
-    def is_valid_title? title
+    def is_parseable? title
       # Normal pattern
       valid_regex = /^\d{4}-\d{2}-?\d{2}?\s([A-Z]{2}\s)?\w+/
       # But add exceptions if only a photographer is supplied or for
