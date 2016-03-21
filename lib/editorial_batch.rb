@@ -35,7 +35,7 @@ class EditorialBatch < Batch
     
     def photographers
       {"DB" => "David Brichford",
-       "HA" => "Howard Agresti",
+       "HA" => "Howard Agriesti",
        "GD" => "Greg Donley"}
     end
 
