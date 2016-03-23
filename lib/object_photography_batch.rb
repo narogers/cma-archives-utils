@@ -1,4 +1,5 @@
 require 'batch'
+require 'pry'
 
 class ObjectPhotographyBatch < Batch
   def include? file_name
@@ -30,7 +31,7 @@ class ObjectPhotographyBatch < Batch
     def extract_title directory
       title = directory
       if directory.include? File::Separator
-        directory.split(File::Separator).last
+        directory = directory.split(File::Separator).last
         if directory.start_with? "DVD"
           @properties[:part_of] = directory
           # Due to collection membership constraints in Fedora that
@@ -42,12 +43,16 @@ class ObjectPhotographyBatch < Batch
           if (directory =~ /^DVD(\d{4})/)
             # If we don't specify Base 10 the leading 0s may resolve it to
             # hex instead ("0056" => 46)
-            dvd_start = (Integer $1, 10) / 10
+            dvd_start = ((Integer $1, 10) / 10) * 10
             dvd_end = dvd_start + 9
+            # Restore zero padding
+            dvd_start = sprintf("%04d", dvd_start)
+            dvd_end = sprintf("%04d", dvd_end)
             title = "DVDs #{dvd_start} to #{dvd_end}"
           end
         end
       end
+      binding.pry
 
       title
     end
