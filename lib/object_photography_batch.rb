@@ -1,5 +1,4 @@
 require 'batch'
-require 'pry'
 
 class ObjectPhotographyBatch < Batch
   def include? file_name
@@ -52,7 +51,6 @@ class ObjectPhotographyBatch < Batch
           end
         end
       end
-      binding.pry
 
       title
     end
