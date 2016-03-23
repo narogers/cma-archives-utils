@@ -64,12 +64,12 @@ class ObjectPhotographyBatch < Batch
       ]
     end
 
-    def generate_metadata directory, file
+   def generate_metadata directory, file
       metadata = {}
-      if (/(^\d+\.\d+\.?\d+?)/ =~ file)
-        metadata[:accession] = $1
+      if (/(^\d+\.\d+(\.\d+)?)/ =~ file)
+        metadata[:accession_number] = $1
       end
      
       metadata
-    end
+   end
 end
