@@ -30,7 +30,7 @@ class ObjectPhotographyBatch < Batch
     def extract_title directory
       title = directory
       if directory.include? File::Separator
-        directory.split(File::Separator)[-2]
+        directory.split(File::Separator).last
         if directory.start_with? "DVD"
           @properties[:part_of] = directory
           # Due to collection membership constraints in Fedora that
@@ -54,16 +54,15 @@ class ObjectPhotographyBatch < Batch
 
     def generate_metadata directory, file
       metadata = {}
-      if (/(^\d+\.\d+\.?\d+?)/ =~ file)
-        metadata[:accession] = $1
+      if (/(^\d+\.\d+(\.\d+)?)/ =~ file)
+        metadata[:accession_number] = $1
       end
      
       metadata
     end
 
-    # TODO: Revisit once the prefix switches to WIB so it does not ignore
-    #       ongoing weekly batches
     def is_parseable? title
-      return (0 == (/^DVD\d{4}/ =~ title))
+      ((0 == (/^DVD\d{4}/ =~ title)) ||
+       (title.start_with? "WIB"))
     end
 end

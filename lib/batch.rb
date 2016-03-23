@@ -87,6 +87,10 @@ class Batch
     output.close
   end
 
+  def has_files?
+    (@files.size > 0)
+  end
+
   protected
     # Sets the owner for the collection when it is ingested into the repository.
     # This value gets written out as a header in each manifest. Override for specific
