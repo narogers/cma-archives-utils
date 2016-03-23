@@ -14,6 +14,6 @@ end
 batches.each do |batch|
   editorial_batch = EditorialBatch.new
   editorial_batch.process batch
-  editorial_batch.manifest "#{batch}#{File::Separator}batch.csv"
+  editorial_batch.manifest "#{batch}#{File::Separator}batch.csv" if editorial_batch.has_files?
 end
 

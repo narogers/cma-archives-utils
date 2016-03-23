@@ -14,6 +14,6 @@ end
 batches.each do |batch|
   object_batch = ObjectPhotographyBatch.new
   object_batch.process batch
-  object_batch.manifest "#{batch}#{File::Separator}batch.csv"
+  object_batch.manifest "#{batch}#{File::Separator}batch.csv" if object_batch.has_files?
 end
 
