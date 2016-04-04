@@ -105,7 +105,8 @@ class EditorialBatch < Batch
       # But add exceptions if only a photographer is supplied or for
       # other patterns that would otherwise match above
       invalid_regexes = [
-        /^\d{4}-\d{2}-?\d{2}?\s[A-Z]{2}$/
+        /^\d{4}-\d{2}-?\d{2}?\s[A-Z]{2}$/,
+        /-DELETED$/
       ] 
     
       # Begin with the invalid regex pattern(s) first
