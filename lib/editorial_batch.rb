@@ -34,9 +34,29 @@ class EditorialBatch < Batch
     end
     
     def photographers
-      {"DB" => "David Brichford",
+      {"BF" => "Brian Feinkopf",
+       "BH" => "Ben Hauser",
+       "BM" => "Bill Meckler",
+       "DB" => "David Brichford",
+       "DR" => "Deirdre Ruane",
+       "DY" => "Dean Yoder",
+       "FL" => "Frank Lanza",
+       "FM" => "Frank Miller",
+       "GD" => "Greg Donley",
+       "GK" => "Gary Kirchenbauer",
        "HA" => "Howard Agriesti",
-       "GD" => "Greg Donley"}
+       "JJ" => "Jennie Jones",
+       "JO" => "Jesika Orahoske",
+       "KM" => "Kayleigh McGillvray",
+       "LB" => "Lucian Bartosik",
+       "MR" => "Martha Ratkowski",
+       "PB" => "Philip Brutz",
+       "RF" => "Richard Fishburn",
+       "RM" => "Rob Muller",
+       "SL" => "Sarah Lehmann",
+       "SO" => "Steve Orzel",
+       "SP" => "Stuart Pearl",
+       "TB" => "Tom Barnard" }
     end
 
     # Some titles may have stray characters; strip out any unwanted = or
@@ -73,8 +93,7 @@ class EditorialBatch < Batch
       batch_details = batch_directory.split(" ")
       @date_created = batch_details.shift
       if (batch_details.first.match(/^[A-Z]{2}$/))
-        photographer = photographers[batch_details.shift]
-        @properties[:photographer] = photographer
+        @properties[:photographer] = photographers[batch_details.shift]
       end
       # Drop the last value if it is a two digit integer such as '01',
       # '02', etc
