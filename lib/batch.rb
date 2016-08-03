@@ -18,15 +18,16 @@ class Batch
       # Traverse the directory structure and, if a file should be included 
       # in the manifest, register it
       Find.find(File.expand_path(directory)) do |path|
-        # Subdirectories are not supported at the current time
         next if File::directory? path
-     
-        file = File.basename(path)
+        # Include everything under the root directory including the
+        # subdirectories if present 
+        file = path.sub("#{directory}", "")
+
         if include? file
           add_file(file, generate_metadata(directory, file))
-          print "[x] #{File.basename(path)}\n"
+          print "[x] #{file}\n"
         else
-          print "[ ] #{File.basename(path)}\n"
+          print "[ ] #{file}\n"
         end 
       end
     else
