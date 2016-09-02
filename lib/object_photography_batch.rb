@@ -22,8 +22,12 @@ class ObjectPhotographyBatch < Batch
     
     def allowed_extensions
       [
+        ".dng", # image/x-adobe-dng,
+        ".jpg", # image/jpeg,
+        ".psd", # Photoshop masters
         ".tif", # image/tiff,
-        ".tiff" # image/tiff
+        ".tiff", # image/tiff,
+        ".xmp", # application/octet-stream
       ]
     end
 
