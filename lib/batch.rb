@@ -43,12 +43,12 @@ class Batch
      !(file_name.end_with? ".csv"))
   end
 
-  def add_file(file_name, metadata)
+  def add_file(file_name, metadata = nil)
     file = BatchFile.new(file_name)
     metadata.each_pair do |key, value|
       @properties[key] = nil unless @properties.include? key
       file.add_metadata(key, value)
-    end
+    end unless metadata.nil?
     @files[file_name] = file
   end
 
