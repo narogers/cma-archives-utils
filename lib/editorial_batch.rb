@@ -130,8 +130,7 @@ class EditorialBatch < Batch
        "SP" => "Stuart Pearl",
        "TB" => "Tom Barnard" }
     end
-
-    
+   
     def generate_metadata(directory, file)
       directory = directory.split("/").last 
       {
