@@ -4,11 +4,12 @@ require 'find'
 
 class Batch
   attr_accessor :collection_title, :files, :metadata_fields
+  attr_accessor :properties
  
   def initialize
     @collection_title = DateTime.now.strftime("%Y-%02m-%02d")
     @files = {}
-    @properties = {}
+    @properties = { date_created: Date.today }
   end
 
   def process(directory)
@@ -44,12 +45,12 @@ class Batch
      !(file_name.end_with? ".csv"))
   end
 
-  def add_file(file_name, metadata)
+  def add_file(file_name, metadata = nil)
     file = BatchFile.new(file_name)
     metadata.each_pair do |key, value|
       @properties[key] = nil unless @properties.include? key
-      file.add_metadata(key, value)
-    end
+      file.add_attribute(key, value)
+    end unless metadata.nil?
     @files[file_name] = file
   end
 
@@ -72,7 +73,7 @@ class Batch
     output = CSV.open(output_file, "w")
     output << [self.collection_title]
     output << [self.owner]
-    output << [self.date_created]
+    output << [@properties[:date_created]]
     output << [self.parent_collection] unless parent_collection.nil?
     output << []
     output << self.manifest_header
@@ -90,6 +91,18 @@ class Batch
 
   def has_files?
     (@files.size > 0)
+  end
+    
+  # By default all directories are considered well formed. Override for
+  # specialized behaviour in subclasses
+  def is_parseable? title
+    true
+  end
+
+  # Determines the name of the batch. Override in a subclass for more specific
+  # behaviour
+  def extract_title(path)
+    "Automated Batch #{DateTime.now.strftime("%Y%02m%02d%02H%02M")}"
   end
 
   protected
@@ -110,28 +123,10 @@ class Batch
       ([:file] << @properties.keys.sort).flatten
     end
   
-    # Date that the batch was created. You can override this in a subclasses
-    # to provide something other than the current time
-    def date_created
-      @date_created ||= Date.today
-    end
- 
-    # Determines the name of the batch. Override in a subclass for more specific
-    # behaviour
-    def extract_title(path)
-      "Automated Batch #{DateTime.now.strftime("%Y%02m%02d%02H%02M")}"
-    end
-
     # Extracts file metadata. Override in subclasses to get more sophisticated
     # behaviours
     def generate_metadata(directory, file_name)
       {title: file_name}
-    end
-
-    # By default all directories are considered well formed. Override for
-    # specialized behaviour in subclasses
-    def is_parseable? title
-      true
     end
 end
 
