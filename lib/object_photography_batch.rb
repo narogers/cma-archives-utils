@@ -72,9 +72,4 @@ class ObjectPhotographyBatch < Batch
      
       metadata
     end
-
-    def is_parseable? title
-      ((0 == (/^DVD\d{4}/ =~ title)) ||
-       (title.start_with? "WIB"))
-    end
 end
