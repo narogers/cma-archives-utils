@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'object_photography_batch'
-
-require 'pry'
+require 'sequel'
 
 RSpec.describe ObjectPhotographyBatch do
   describe "#include?" do
@@ -40,6 +39,20 @@ RSpec.describe ObjectPhotographyBatch do
 
       file = batch.files["test-1.dng"]
       expect(file.metadata[:part_of]).to eq "DVD2005"
+    end
+
+    it "pulls information from the photography database" do
+      allow(Find).to receive(:find).and_yield("")
+      batch.load_photostudio_db "spec/fixtures/photo-mock.db"
+      batch.process("DVD0452")
+      batch.add_file("2014.12.tif", nil)
+      
+      expect(batch.files.size).to be 1
+ 
+      file = batch.files["2014.12.tif"]
+      expect(file.metadata[:part_of]).to eq "DVD0452"
+      expect(file.metadata[:source]).to eq "Topaz"
+      expect(file.metadata[:date_created]).to eq "2005-02-01"
     end
   end
 
