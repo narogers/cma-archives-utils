@@ -28,10 +28,10 @@ RSpec.describe ObjectPhotographyBatch do
   end
 
   describe "#add_files" do
-    let(:batch) { ObjectPhotographyBatch.new }
-    
     it "adds Editorial specific metadata" do
       allow(Find).to receive(:find).and_yield("")
+
+      batch = ObjectPhotographyBatch.new
       batch.process("DVD2005")
       batch.add_file("test-1.dng", nil)
 
@@ -43,10 +43,12 @@ RSpec.describe ObjectPhotographyBatch do
 
     it "pulls information from the photography database" do
       allow(Find).to receive(:find).and_yield("")
-      batch.load_photostudio_db "spec/fixtures/photo-mock.db"
+      
+      batch = ObjectPhotographyBatch.new
+      batch.load_photostudio_db "spec/fixtures/photostudio-mock.db"
       batch.process("DVD0452")
       batch.add_file("2014.12.tif", nil)
-      
+
       expect(batch.files.size).to be 1
  
       file = batch.files["2014.12.tif"]
@@ -115,9 +117,8 @@ RSpec.describe ObjectPhotographyBatch do
     let(:batch) { ObjectPhotographyBatch.new }
     
     it "initializes the database connection" do
-      batch.load_photostudio_db("spec/fixtures/photo-mock.db")
-      
-      expect(batch.photography_db.class).to eq Sequel::SQLite::Dataset
+      batch.load_photostudio_db("spec/fixtures/photostudio-mock.db")
+      expect(batch.database.class).to eq Sequel::SQLite::Database
     end
 
     it "throws an error when the table is missing" do
