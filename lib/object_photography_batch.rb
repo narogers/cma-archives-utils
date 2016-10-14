@@ -70,10 +70,12 @@ class ObjectPhotographyBatch < Batch
 
   def load_photostudio_db path
     @database = Sequel.sqlite(database: path)
-
+    
     if not @database.table_exists? :sources
       raise RuntimeError.new "Table sources could not be found"
     end
+
+    require 'photostudio_record'
     PhotostudioRecord.db = @database
   end
 
