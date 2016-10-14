@@ -2,7 +2,7 @@ require 'batch'
 require 'sequel'
 
 class ObjectPhotographyBatch < Batch
-  attr :photography_db
+  attr :database
 
   def include? file_name
     super &&
@@ -16,16 +16,12 @@ class ObjectPhotographyBatch < Batch
         @files[file].add_attribute(key, @properties[key])
       end
 
-      unless @photography_db.nil?
-        # DVD number = part_of - "DVD"
-        # Accession master = file name - extension
-        #
-        # If you find a match in the database add the Date Created and
-        # Sources to the manifest
+      unless @database.nil?
         accession_master = File.basename(file, ".*")
         dvd = @properties[:part_of].sub("DVD", "")
 
-        metadata = @photography_db.where(accession_master: accession_master,
+        require 'photostudio_record'
+        metadata = PhotostudioRecord.where(accession_master: accession_master,
           dvd: dvd).first
         unless metadata.nil?
           @files[file].add_attribute(:source, metadata[:source])
@@ -74,11 +70,11 @@ class ObjectPhotographyBatch < Batch
 
   def load_photostudio_db path
     @database = Sequel.sqlite(database: path)
-    if @database.table_exists? :sources
-      @photography_db = @database[:sources]
-    else
+
+    if not @database.table_exists? :sources
       raise RuntimeError.new "Table sources could not be found"
     end
+    PhotostudioRecord.db = @database
   end
 
   protected

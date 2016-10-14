@@ -4,31 +4,31 @@ require 'sequel'
 class CsvImporter
   attr_accessor :csv_path
 
-  def initialize csv_input
-    if File.exists? csv_input
-      self.csv_path = csv_input
+  def initialize csv
+    if File.exists? csv
+      self.csv_path = csv
     else
-      raise FileNotFoundError.new("Could not locate #{csv_input}")
+      raise FileNotFoundError.new("Could not locate #{csv}")
     end
   end
 
   def import_to database
+    database = Sequel.sqlite(database: database)
+    require 'photostudio_record'
+
     metadata = CSV.read(csv_path, {headers: true, header_converters: :symbol,
       encoding: "ISO-8859-1"})
-    metadata.each_with_index do |photo_data, i|
-      # TODO: Add a logger
-      puts "[#{i} / #{metadata.count}] #{photo_data[:accession_]}"
-      
-      next if database.include? accession_number: photo_data[:accession_number],
-        dvd: photo_data[:dvd]
+    metadata.each_with_index do |csv, i|
+      puts "[#{i} / #{metadata.count}] #{csv[:accession_]}"
      
-      database.insert(
-        accession_number: photo_data[:accession_master],
-        accession_master: photo_data[:accession_],
-        date_created: normalize_date(photo_data[:date_photographed]),
-        dvd: photo_data[:dvd],
-        source: photo_data[:source] 
-      )
+      PhotostudioRecord.update_or_create({ 
+        accession_master: csv[:accession_], 
+        dvd: csv[:dvd] 
+      }, { 
+        accession_number: csv[:accession_master],
+        date_created: normalize_date(csv[:date_photographed]),
+        source: csv[:source] 
+      }) 
     end
   end
 
