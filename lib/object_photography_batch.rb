@@ -1,4 +1,5 @@
 require 'batch'
+require 'sequel'
 
 class ObjectPhotographyBatch < Batch
   attr :photography_db
