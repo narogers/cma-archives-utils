@@ -110,4 +110,19 @@ RSpec.describe ObjectPhotographyBatch do
       expect(tiff.metadata[:part_of]).to eq "DVD0919"
     end
   end
+
+  describe "#load_photostudio_db" do
+    let(:batch) { ObjectPhotographyBatch.new }
+    
+    it "initializes the database connection" do
+      batch.load_photostudio_db("spec/fixtures/photo-mock.db")
+      
+      expect(batch.photography_db.class).to eq Sequel::SQLite::Dataset
+    end
+
+    it "throws an error when the table is missing" do
+      expect { batch.load_photostudio_db "spec/fixtures/bad-db-path" }.to raise_error(RuntimeError)
+      File.delete("spec/fixtures/bad-db-path")
+    end
+  end
 end
