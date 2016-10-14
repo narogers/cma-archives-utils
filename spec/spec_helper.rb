@@ -2,8 +2,8 @@ RSpec.configure do |config|
   config.color = true
   config.add_formatter :documentation
 
-  config.before(:all) { silence_output }
-  config.after(:all) { enable_output }
+  #config.before(:all) { silence_output }
+  #config.after(:all) { enable_output }
 end
 
 def silence_output

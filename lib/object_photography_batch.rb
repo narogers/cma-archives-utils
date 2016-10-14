@@ -1,6 +1,8 @@
 require 'batch'
 
 class ObjectPhotographyBatch < Batch
+  attr :photography_db
+
   def include? file_name
     super &&
       allowed_extensions.include?(File.extname(file_name).downcase)
@@ -11,6 +13,27 @@ class ObjectPhotographyBatch < Batch
     [:part_of].each do |key|
       if @properties.include? key
         @files[file].add_attribute(key, @properties[key])
+      end
+
+      unless @photography_db.nil?
+        # DVD number = part_of - "DVD"
+        # Accession master = file name - extension
+        #
+        # If you find a match in the database add the Date Created and
+        # Sources to the manifest
+        accession_master = File.basename(file, ".*")
+        dvd = @properties[:part_of].sub("DVD", "")
+
+        metadata = @photography_db.where(accession_master: accession_master,
+          dvd: dvd).first
+        unless metadata.nil?
+          @files[file].add_attribute(:source, metadata[:source])
+
+          date_created = metadata[:date_created].nil? ?
+             nil :
+             metadata[:date_created].strftime("%Y-%m-%d")
+          @files[file].add_attribute(:date_created, date_created)
+        end
       end
     end
   end
@@ -46,6 +69,11 @@ class ObjectPhotographyBatch < Batch
   def is_parseable? title
     ((0 == (/^DVD\d{4}/ =~ title)) ||
      (title.start_with? "WIB"))
+  end
+
+  def load_photostudio_db path
+    @database = Sequel.sqlite(database: path)
+    @photography_db = @database[:sources]
   end
 
   protected
