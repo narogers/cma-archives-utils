@@ -34,7 +34,7 @@ class Batch
     else
       print "WARNING: Directory name is invalid\n"  
     end
-    print "\n"
+    puts
   end
 
   # Given a file determine if it should be included in the manifest or not.
