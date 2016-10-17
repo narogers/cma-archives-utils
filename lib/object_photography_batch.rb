@@ -12,30 +12,31 @@ class ObjectPhotographyBatch < Batch
   def add_file file, metadata
     super
     [:part_of].each do |key|
-      if @properties.include? key
-        @files[file].add_attribute(key, @properties[key])
+      @files[file].add_attribute(key, @properties[key])
+    end
+
+    unless @database.nil?
+      accession_master = File.basename(file, ".*")
+      dvd = @properties[:part_of].clone 
+      if (!dvd.nil? and dvd.start_with? "DVD")
+        dvd.sub!("DVD", "")
       end
 
-      unless @database.nil?
-        accession_master = File.basename(file, ".*")
-        dvd = @properties[:part_of].sub("DVD", "")
+      require 'photostudio_record'
+      metadata = PhotostudioRecord.where(accession_master: accession_master,
+        dvd: dvd).first
+      unless metadata.nil?
+        @files[file].add_attribute(:source, metadata[:source])
 
-        require 'photostudio_record'
-        metadata = PhotostudioRecord.where(accession_master: accession_master,
-          dvd: dvd).first
-        unless metadata.nil?
-          @files[file].add_attribute(:source, metadata[:source])
-
-          date_created = metadata[:date_created].nil? ?
-             nil :
-             metadata[:date_created].strftime("%Y-%m-%d")
-          @files[file].add_attribute(:date_created, date_created)
+        date_created = metadata[:date_created].nil? ?
+           nil :
+           metadata[:date_created].strftime("%Y-%m-%d")
+        @files[file].add_attribute(:date_created, date_created)
           
-          # Need to register the properties so they can be added to the
-          # manifest
-          @properties[:date_created] ||= nil
-          @properties[:source] ||= nil
-        end
+        # Need to register the properties so they can be added to the
+        # manifest
+        @properties[:date_created] ||= nil
+        @properties[:source] ||= nil
       end
     end
   end
@@ -45,7 +46,7 @@ class ObjectPhotographyBatch < Batch
     if directory.include? File::Separator
       directory = directory.split(File::Separator).last
     end  
-    if directory.start_with? "DVD"
+    if directory =~ /^(DVD|WIB)/ 
       @properties[:part_of] = directory
       # Due to collection membership constraints in Fedora that
       # cause performance to suffer with more than 2,000 members in

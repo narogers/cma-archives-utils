@@ -28,7 +28,7 @@ RSpec.describe ObjectPhotographyBatch do
   end
 
   describe "#add_files" do
-    it "adds Editorial specific metadata" do
+    it "adds Object specific metadata" do
       allow(Find).to receive(:find).and_yield("")
 
       batch = ObjectPhotographyBatch.new
@@ -55,6 +55,21 @@ RSpec.describe ObjectPhotographyBatch do
       expect(file.metadata[:part_of]).to eq "DVD0452"
       expect(file.metadata[:source]).to eq "Topaz"
       expect(file.metadata[:date_created]).to eq "2005-02-01"
+    end
+
+    it "handles weekly batch ingests" do
+      allow(Find).to receive(:find).and_yield("")
+      batch = ObjectPhotographyBatch.new
+      batch.load_photostudio_db "spec/fixtures/photostudio-mock.db"
+      batch.process("WIB095")
+      batch.add_file("1992.394.tif", nil)
+
+      expect(batch.files.size).to be 1
+
+      file = batch.files["1992.394.tif"]
+      expect(file.metadata[:part_of]).to eq "WIB095"
+      expect(file.metadata[:source]).to eq "CAMERA"
+      expect(file.metadata[:date_created]).to be_nil
     end
   end
 
