@@ -30,6 +30,11 @@ class ObjectPhotographyBatch < Batch
              nil :
              metadata[:date_created].strftime("%Y-%m-%d")
           @files[file].add_attribute(:date_created, date_created)
+          
+          # Need to register the properties so they can be added to the
+          # manifest
+          @properties[:date_created] ||= nil
+          @properties[:source] ||= nil
         end
       end
     end
