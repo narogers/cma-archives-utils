@@ -53,7 +53,7 @@ RSpec.describe ObjectPhotographyBatch do
  
       file = batch.files["2014.12.tif"]
       expect(file.metadata[:part_of]).to eq "DVD0452"
-      expect(file.metadata[:source]).to eq "Topaz"
+      expect(file.metadata[:capture_device]).to eq "Topaz"
       expect(file.metadata[:date_created]).to eq "2005-02-01"
     end
 
@@ -68,7 +68,7 @@ RSpec.describe ObjectPhotographyBatch do
 
       file = batch.files["1992.394.tif"]
       expect(file.metadata[:part_of]).to eq "WIB095"
-      expect(file.metadata[:source]).to eq "CAMERA"
+      expect(file.metadata[:capture_device]).to eq "CAMERA"
       expect(file.metadata[:date_created]).to be_nil
     end
   end
