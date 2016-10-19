@@ -26,7 +26,7 @@ class ObjectPhotographyBatch < Batch
       metadata = PhotostudioRecord.where(accession_master: accession_master,
         dvd: dvd).first
       unless metadata.nil?
-        @files[file].add_attribute(:capture_device, metadata[:source])
+        @files[file].add_attribute(:device, metadata[:source])
 
         date_created = metadata[:date_created].nil? ?
            nil :
@@ -36,7 +36,7 @@ class ObjectPhotographyBatch < Batch
         # Need to register the properties so they can be added to the
         # manifest
         @properties[:date_created] ||= nil
-        @properties[:capture_device] ||= nil
+        @properties[:device] ||= nil
       end
     end
   end
