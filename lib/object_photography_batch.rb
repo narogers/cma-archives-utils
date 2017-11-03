@@ -94,6 +94,7 @@ class ObjectPhotographyBatch < Batch
       [
         ".dng", # image/x-adobe-dng,
         ".jpg", # image/jpeg,
+        ".psb", # Photoshop large format
         ".psd", # Photoshop masters
         ".tif", # image/tiff,
         ".tiff", # image/tiff,
