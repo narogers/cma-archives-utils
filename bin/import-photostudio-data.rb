@@ -14,7 +14,7 @@
 # present it will default to photostudio.db
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
-require 'csv_importer'
+require 'photostudio_csv'
 require 'sequel'
 
 def initialize_database db_path
@@ -33,5 +33,5 @@ csv_path = ARGV[0]
 db_path = ARGV[1].nil? ? "photostudio.db" : ARGV[1]
 
 initialize_database db_path
-csv_processor = CsvImporter.new csv_path
-csv_processor.import_to @database[:sources]
+processor = PhotostudioProcessor.new csv_path
+processor.import_to @database[:sources]
