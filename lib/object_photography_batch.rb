@@ -1,5 +1,6 @@
 require 'batch'
 require 'sequel'
+require 'photostudio_record'
 
 class ObjectPhotographyBatch < Batch
   attr :database
@@ -22,7 +23,6 @@ class ObjectPhotographyBatch < Batch
         dvd.sub!("DVD", "")
       end
 
-      require 'photostudio_record'
       metadata = PhotostudioRecord.where(accession_master: accession_master,
         dvd: dvd).first
       unless metadata.nil?
@@ -72,17 +72,6 @@ class ObjectPhotographyBatch < Batch
   def is_parseable? title
     ((0 == (/^DVD\d{4}/ =~ title)) ||
      (title.start_with? "WIB"))
-  end
-
-  def load_photostudio_db path
-    @database = Sequel.sqlite(database: path)
-    
-    if not @database.table_exists? :sources
-      raise RuntimeError.new "Table sources could not be found"
-    end
-
-    require 'photostudio_record'
-    PhotostudioRecord.db = @database
   end
 
   protected

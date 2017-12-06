@@ -13,7 +13,6 @@ batches = Dir.glob(File.expand_path(dropbox) + "/**/").select do |path|
 end
 batches.each do |batch|
   object_batch = ObjectPhotographyBatch.new
-  object_batch.load_photostudio_db "photostudio.db"
   object_batch.process batch
   object_batch.manifest "#{batch}#{File::Separator}batch.csv" if object_batch.has_files?
 end
