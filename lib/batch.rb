@@ -2,6 +2,8 @@ require 'batch_file'
 require 'csv'
 require 'find'
 
+require 'pry'
+
 class Batch
   attr_accessor :collection_title, :files, :metadata_fields
   attr_accessor :properties
@@ -14,6 +16,8 @@ class Batch
 
   def process(directory)
     print "[#{File.basename(directory)}]\n"
+    puts directory
+
     if is_parseable? File.basename(directory)
       @collection_title = extract_title(directory)
       # Traverse the directory structure and, if a file should be included 

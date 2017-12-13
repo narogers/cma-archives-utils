@@ -3,8 +3,6 @@ require 'sequel'
 require 'photostudio_record'
 
 class ObjectPhotographyBatch < Batch
-  attr :database
-
   def include? file_name
     super &&
       allowed_extensions.include?(File.extname(file_name).downcase)
@@ -12,11 +10,11 @@ class ObjectPhotographyBatch < Batch
 
   def add_file file, metadata
     super
+
     [:part_of].each do |key|
       @files[file].add_attribute(key, @properties[key])
     end
-
-    unless @database.nil?
+    unless PhotostudioRecord.db.nil?
       accession_master = File.basename(file, ".*")
       dvd = @properties[:part_of].clone 
       if (!dvd.nil? and dvd.start_with? "DVD")
@@ -33,8 +31,6 @@ class ObjectPhotographyBatch < Batch
            metadata[:date_created].strftime("%Y-%m-%d")
         @files[file].add_attribute(:date_created, date_created)
           
-        # Need to register the properties so they can be added to the
-        # manifest
         @properties[:date_created] ||= nil
         @properties[:device] ||= nil
       end

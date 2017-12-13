@@ -6,6 +6,7 @@ gem 'mime-types'
 # For unit tests
 gem 'rspec'
 gem 'rspec-mocks'
+gem 'simplecov'
 
 # For database interactions
 gem 'sequel', "~>5.3"

@@ -5,6 +5,16 @@
 # stage, or location within the object. To use these simply require the
 # library in any scripts that need to look up the values
 module Conservation
+  DIVISIONS = [
+    "Asian Lab",
+    "CIBL",
+    "Objects Lab",
+    "Paintings Lab",
+    "Paper Lab",
+    "Photographs",
+    "Textile Lab"
+  ]
+
   FIELDS = [
     :division, # Lab within the Conservation department,
     :conservation_type, # Category for image(s)

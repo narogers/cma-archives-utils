@@ -1,8 +1,14 @@
 require 'spec_helper'
-require 'object_photography_batch'
 require 'sequel'
+require 'object_photography_batch'
 
 RSpec.describe ObjectPhotographyBatch do
+  before(:each) do
+    PHOTO_DB.disconnect
+    PHOTO_DB = Sequel.connect("sqlite://spec/fixtures/photostudio-mock.db")
+    PhotostudioRecord.dataset = PHOTO_DB[:sources]
+  end
+
   describe "#include?" do
     let(:batch) { ObjectPhotographyBatch.new }
 
@@ -20,6 +26,7 @@ RSpec.describe ObjectPhotographyBatch do
 
     it "processes Photoshop files" do
       expect(batch.include?("file-name.psd")).to be true
+      expect(batch.include?("file-name.psb")).to be true
     end
 
     it "processes XMP files" do
@@ -28,7 +35,7 @@ RSpec.describe ObjectPhotographyBatch do
   end
 
   describe "#add_files" do
-    it "adds Object specific metadata" do
+    it "adds object specific metadata" do
       allow(Find).to receive(:find).and_yield("")
 
       batch = ObjectPhotographyBatch.new
@@ -45,7 +52,6 @@ RSpec.describe ObjectPhotographyBatch do
       allow(Find).to receive(:find).and_yield("")
       
       batch = ObjectPhotographyBatch.new
-      batch.load_photostudio_db "spec/fixtures/photostudio-mock.db"
       batch.process("DVD0452")
       batch.add_file("2014.12.tif", nil)
 
@@ -60,7 +66,6 @@ RSpec.describe ObjectPhotographyBatch do
     it "handles weekly batch ingests" do
       allow(Find).to receive(:find).and_yield("")
       batch = ObjectPhotographyBatch.new
-      batch.load_photostudio_db "spec/fixtures/photostudio-mock.db"
       batch.process("WIB095")
       batch.add_file("1992.394.tif", nil)
 
@@ -110,9 +115,8 @@ RSpec.describe ObjectPhotographyBatch do
   end
 
   describe "#process" do
-    let(:files) do
-      ["test-1.dng", "test-2.tif", "test-3.tiff", "test-4.jpg", "test-5.psd"]
-    end
+    let(:files) { ["test-1.dng", "test-2.tif", "test-3.tiff", "test-4.jpg", "test-5.psd"] }
+
     it "should process a directory without any errors" do
       batch = ObjectPhotographyBatch.new
       find_mock = allow(Find).to receive(:find)
@@ -125,20 +129,6 @@ RSpec.describe ObjectPhotographyBatch do
       
       tiff = batch.files["test-2.tif"]
       expect(tiff.metadata[:part_of]).to eq "DVD0919"
-    end
-  end
-
-  describe "#load_photostudio_db" do
-    let(:batch) { ObjectPhotographyBatch.new }
-    
-    it "initializes the database connection" do
-      batch.load_photostudio_db("spec/fixtures/photostudio-mock.db")
-      expect(batch.database.class).to eq Sequel::SQLite::Database
-    end
-
-    it "throws an error when the table is missing" do
-      expect { batch.load_photostudio_db "spec/fixtures/bad-db-path" }.to raise_error(RuntimeError)
-      File.delete("spec/fixtures/bad-db-path")
     end
   end
 end

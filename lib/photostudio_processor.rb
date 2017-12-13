@@ -1,5 +1,6 @@
 require 'csv'
 require 'sequel'
+require 'photostudio_record'
 
 class PhotostudioProcessor
   attr_accessor :csv_path
@@ -12,16 +13,13 @@ class PhotostudioProcessor
     end
   end
 
-  def import_to database
-    database = Sequel.sqlite(database: database)
-    require 'database_record'
-
+  def import
     metadata = CSV.read(csv_path, {headers: true, header_converters: :symbol,
       encoding: "ISO-8859-1"})
     metadata.each_with_index do |csv, i|
       puts "[#{i} / #{metadata.count}] #{csv[:accession_]}"
      
-      DatabaseRecord.update_or_create({ 
+      PhotostudioRecord.update_or_create({ 
         accession_master: csv[:accession_], 
         dvd: csv[:dvd] 
       }, { 

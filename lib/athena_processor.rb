@@ -1,5 +1,6 @@
 require 'csv'
 require 'sequel'
+require 'athena_record'
 
 class AthenaProcessor
   attr_accessor :csv_path
@@ -12,10 +13,7 @@ class AthenaProcessor
     end
   end
 
-  def import_to database
-    database = Sequel.sqlite(database: database)
-    require 'athena_record'
-
+  def import
     metadata = CSV.read(csv_path, {headers: false, encoding: "ISO-8859-1"})
     metadata.each_with_index do |csv, i|
       puts "[#{i} / #{metadata.count}] #{csv[1]}"
