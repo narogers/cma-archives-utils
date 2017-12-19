@@ -8,19 +8,22 @@
 # 'sqlite3' 
 #
 # To run the import execute
-# bin/import-accession-numbers.rb [csv] [database]
+# bin/import-accession-numbers.rb [csv] 
+#
+# The database is configured by setting the ATHENA_DB environment variable
+# to a connection string. By default a database will be created in the working
+# directory named accession_numbers.db
 #
 # where 
 # [csv] corresponds to a comma delimited list of keys, numbers, and types
-# [database] corresponds to a stateless SQLite file on disk
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
-require 'athena_processor'
 require 'sequel'
 
-def initialize_database db
-  @database = Sequel.sqlite(database: db)
-  @database.create_table? :accessions do
+def initialize_database
+  uri = ENV.fetch("ATHENA_DB", "sqlite://accession_numbers.db") 
+  database = Sequel.connect(uri)
+  database.create_table? :accessions do
     primary_key :id
     String :accession_number
     String :category
@@ -28,8 +31,8 @@ def initialize_database db
 end
 
 csv_input = ARGV[0]
-db_output = ARGV[1].nil? ? "accession_numbers.db" : ARGV[1]
 
-initialize_database db_output
+initialize_database
+require 'athena_processor'
 processor = AthenaProcessor.new csv_input
-processor.import_to @database[:accessions]
+processor.import
