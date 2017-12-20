@@ -21,6 +21,22 @@ RSpec.describe ConservationBatch do
     end
   end
 
+  describe "#extract_title" do
+    let(:batch) { ConservationBatch.new }
+
+    it "creates well formed titles based on accession number" do
+      expect(batch.extract_title("1965.142_")).to eq "1965.142"
+    end
+
+    it "defaults to the directory name" do
+      expect(batch.extract_title("1934 21 Conservation Images")).to eq "1934 21 Conservation Images"
+    end
+
+    it "formats titles cleanly" do
+      expect(batch.extract_title("2001.421_BT_Pictures_of_France")).to eq "2001.421 - Pictures of France"
+    end
+  end
+
   describe "#process_directory?" do
     let(:batch) { ConservationBatch.new }
     it "accepts only directories which start with accession numbers" do

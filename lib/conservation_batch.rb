@@ -92,6 +92,25 @@ class ConservationBatch < Batch
     return metadata
   end
 
+  # Title should be accession number followed by anything which is not a
+  # short code
+  #
+  # For example
+  # 1916.101 - Spoonbill
+  # 1954.21
+  def extract_title directory
+    base = File.basename directory
+    metadata = parse_path base
+    title = "" 
+    title += "#{metadata[:accession_number].first}" unless metadata[:accession_number].nil?
+    unless metadata[:title].empty?
+      title += " - " unless title.empty?
+      title += metadata[:title]
+    end
+ 
+    return title
+  end
+
   def allowed_extensions
     [".dng", # Adobe RAW
      ".jpg", # image/jpg
