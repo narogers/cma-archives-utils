@@ -1,7 +1,6 @@
 require 'batch'
 require 'batch_utils'
 require 'conservation_codes'
-require 'pry'
 
 class ConservationBatch < Batch
   attr :properties
@@ -73,7 +72,11 @@ class ConservationBatch < Batch
 
     metadata[:title] = []
     if parts[0].match BatchUtils.accession_number
-      accession_number = parts.shift.gsub(/[^0-9.]/, "")
+      accession_number = parts.shift
+      # Ignore details, sections, page numbers, and other errata
+      accession_number.sub!(/det\d+/, "")
+      accession_number.sub!(/deg\d+/, "")
+      accession_number.sub!(/pg\d+/, "")
       accession_number.chop if accession_number.end_with? "."
       metadata[:accession_number] = [accession_number]
     end
