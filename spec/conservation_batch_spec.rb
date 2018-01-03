@@ -103,4 +103,26 @@ RSpec.describe ConservationBatch do
       expect(metadata[:title]).to eq "DirTwo/custom_image.jpg"
     end
   end
+  
+  describe "#parse_path" do
+    let(:batch) { ConservationBatch.new }
+
+    it "handles detXX file names" do
+      file = "1943.54det04"
+      metadata = batch.parse_path(file)
+      expect(metadata[:accession_number]).to eq ["1943.54"]
+    end
+
+    it "handles degree notion" do
+      file = "1945.109deg180"
+      metadata = batch.parse_path(file)
+      expect(metadata[:accession_number]).to eq ["1945.109"]
+    end
+
+    it "handles page numbers" do
+      file = "1976.321pg043"
+      metadata = batch.parse_path(file)
+      expect(metadata[:accession_number]).to eq ["1976.321"]
+    end
+  end
 end
